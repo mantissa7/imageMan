@@ -1,0 +1,24 @@
+{
+  "name": "uploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "pica": "^2.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mantissa7/imageMan.git"
+  },
+  "author": "mantissa7",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mantissa7/imageMan/issues"
+  },
+  "homepage": "https://github.com/mantissa7/imageMan#readme"
+}

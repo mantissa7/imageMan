@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Click Pica</title>
+    <style>
+        *{box-sizing: border-box}
+
+        html, body{
+            width:100%;
+            height:100%;
+            margin:0;
+            padding: 0;
+        }
+
+        #images{
+            width:70vw;
+        }
+        #images ul{
+            list-style: none;
+            margin:0;
+            padding:0;
+        }
+        #images ul li{
+            padding:15px;
+            max-width: 300px;
+        }
+        #images ul li img{
+            max-width: 100%;
+            height:auto;
+            display: block;
+        }
+
+
+
+        .loader {
+            font-size: 10px;
+            margin: 50px auto;
+            text-indent: -9999em;
+            width: 11em;
+            height: 11em;
+            border-radius: 50%;
+            background: #0DC5C1;
+            background: -moz-linear-gradient(left, #0DC5C1 10%, rgba(255, 255, 255, 0) 42%);
+            background: -webkit-linear-gradient(left, #0DC5C1 10%, rgba(255, 255, 255, 0) 42%);
+            background: -o-linear-gradient(left, #0DC5C1 10%, rgba(255, 255, 255, 0) 42%);
+            background: -ms-linear-gradient(left, #0DC5C1 10%, rgba(255, 255, 255, 0) 42%);
+            background: linear-gradient(to right, #0DC5C1 10%, rgba(255, 255, 255, 0) 42%);
+            position: relative;
+            -webkit-animation: load3 1.4s infinite linear;
+            animation: load3 1.4s infinite linear;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+        .loader:before {
+            width: 50%;
+            height: 50%;
+            background: #0DC5C1;
+            border-radius: 100% 0 0 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: '';
+        }
+        .loader:after {
+            background: #fff;
+            width: 75%;
+            height: 75%;
+            border-radius: 50%;
+            content: '';
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+        @-webkit-keyframes load3 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes load3 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<form>
+    <input type="file" name="vehicleImages" value="Choose Image">
+
+    <input type="submit" value="Upload">
+</form>
+
+
+<div id="images">
+    <ul>
+        <li></li>
+        <li id="two"></li>
+        <li></li>
+    </ul>
+</div>
+
+<footer>
+    <script src="node_modules/pica/dist/pica.js"></script>
+
+    <script>
+        var dealerID = 404;
+        var vehicleID = 813177;
+
+        function finished(){
+            console.log("finished.");
+        }
+
+        function zip(){}
+
+        function upload(file){
+
+            //TODO: make the host part of the URL dynamic
+            var url = "http://dev.localhost/api/vehicle/"+vehicleID+"/image";
+
+            var form = new FormData();
+            form.append('name', 'test.jpg');
+            form.append('data', file);
+
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", url);
+            ajax.onload = function(){
+                if(ajax.status !== 200) return;
+                console.log(ajax.responseText);
+            };
+            ajax.send(form);
+
+        }
+
+        document.forms[0].addEventListener("submit", function(e) {
+            e.preventDefault();
+            var files = e.target.children.vehicleImages.files;
+
+            var imageDiv = document.getElementById('images');
+            var imageList = imageDiv.children[0];
+
+            var from = new Image();
+
+            var options = {
+                alpha : true
+            };
+
+            from.onload = function(){
+
+                //TODO: this should be set in a global variable and/or got from the php array in common.inc
+                var sizes = ['large2', 'large1', 'full', '344x258', '200x150', '96x72', '60x45'];
+
+                for(var i = 0; i < sizes.length; i++){
+
+                    var size = sizes[i];
+
+                    switch(size){
+                        case "large2":
+                               size = '1280x1080';
+                            break;
+                        case "large1":
+                               size = '1024x768';
+                            break;
+                        case "full":
+                               size = '640x480';
+                            break;
+                    }
+
+                    var to = document.createElement("canvas");
+                    var dimentions = size.split('x');
+                    console.log(dimentions);
+                    to.width = dimentions[0];
+                    to.height = dimentions[1];
+
+                    pica.resizeCanvas(from, to, options, finished);
+
+                    document.body.appendChild(to);
+
+                    files = null;
+                    to.toBlob(function(blob){
+                        //zip(files);
+                        upload(blob);
+                    }, "image/jpeg");
+
+                }
+            };
+
+            //start the onload process
+            from.src = window.URL.createObjectURL(files[0]);
+
+        });
+
+
+    </script>
+</footer>
+</body>
+</html>
